@@ -164,6 +164,6 @@
         }
     });
 
-    window.StateManager.addPlugin('*[data-imageSearch="true"]', 'swImageSearch');
+    window.StateManager.addPlugin('*[data-imageSearch="true"]', 'swImageSearch', [ 'm', 'l', 'xl' ]);
 
 })(jQuery, window);
