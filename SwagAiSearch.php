@@ -116,6 +116,7 @@ class SwagAiSearch extends Plugin
     public function onAddJavascriptFiles()
     {
         $jsFiles = [
+            $this->getPath() . '/Views/frontend/_public/vendor/js/clarifai.js',
             $this->getPath() . '/Views/frontend/_public/src/js/jquery.image-search.js',
         ];
 

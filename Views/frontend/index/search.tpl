@@ -23,7 +23,11 @@
                 <input type="text" name="imageurl" id="image-url" class="search--image-input" placeholder="Bild URL" />
             </div>
 
-            <div class="search--webcam-video"></div>
+            <div class="search--webcam-video">
+                <a href="#" class="btn is--primary search--webcam-snapshot">
+                    <i class="icon--camera"></i> {s name="snapshot/button/label"}Snapshot{/s}
+                </a>
+            </div>
         </div>
 
     </div>
