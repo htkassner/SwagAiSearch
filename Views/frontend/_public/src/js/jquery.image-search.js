@@ -4,24 +4,48 @@
 
         defaults: {
 
-            controllerUrl: null
+            mainSearchSelector: '.search--main',
 
+            imageSearchSelector: '.search--images',
+
+            switchBtnSelector: '.btn--search-image',
+
+            webCamBtnSelector: '.btn--webcam-image',
+
+            webCamVideoSelector: '.search--webcam-video',
+
+            imageInputSelector: '.search--image-input',
+
+            snapShotBtnSelector: '.search--webcam-snapshot',
+
+            webCamMedia: {
+                audio: false,
+                video: true
+            },
+
+            controllerUrl: null,
+
+            clariApiUser: 'J-NiAVGDQ2yWDurrDO54FQ_oAdDACZYuIHHLfsYL',
+
+            clariApiSecret: '_jKoxN1a6lw16A3z8w-yvwGuDloTSRIDU1Ang3bs'
         },
 
         init: function () {
             var me = this;
 
             me.initUserMedia();
+            me.initClarifaiApp();
 
-            me.$mainSearch = me.$el.find('.search--main');
-            me.$imageSearch = me.$el.find('.search--images');
-            me.$switchBtn = me.$el.find('.btn--search-image');
-            me.$webCamBtn = me.$el.find('.btn--webcam-image');
-            me.$webCamVideo = me.$el.find('.search--webcam-video');
-            me.$imageInput = me.$el.find('.search--image-input');
+            me.$mainSearch = me.$el.find(me.opts.mainSearchSelector);
+            me.$imageSearch = me.$el.find(me.opts.imageSearchSelector);
+            me.$switchBtn = me.$el.find(me.opts.switchBtnSelector);
+            me.$webCamBtn = me.$el.find(me.opts.webCamBtnSelector);
+            me.$webCamVideo = me.$el.find(me.opts.webCamVideoSelector);
+            me.$imageInput = me.$el.find(me.opts.imageInputSelector);
+            me.$snapShotBtn = me.$el.find(me.opts.snapShotBtnSelector);
 
             me.videoEl = me.createVideoElement(400, 300);
-            me.$webCamVideo.append(me.videoEl);
+            me.$webCamVideo.prepend(me.videoEl);
 
             me.registerEvents();
         },
@@ -31,7 +55,8 @@
 
             me._on(me.$switchBtn, 'click', $.proxy(me.onSwitchBtn, me));
             me._on(me.$webCamBtn, 'click', $.proxy(me.onWebCamBtn, me));
-            me._on(me.$imageInput, 'keyup', $.proxy(me.onImageInput, me));
+            me._on(me.$snapShotBtn, 'click', $.proxy(me.onSnapShotBtn, me));
+            // me._on(me.$imageInput, 'keyup', $.proxy(me.onImageInput, me));
             me._on(me.$imageInput, 'change', $.proxy(me.onImageInput, me));
         },
 
@@ -57,13 +82,17 @@
             me.getWebCamVideo();
         },
 
+        onSnapShotBtn: function () {
+            var me = this;
+
+            me.predictByImageUrl(me.getWebCamSnapshot());
+        },
+
         onImageInput: function () {
             var me = this,
                 imageUrl = me.$imageInput.val();
 
-            console.log('onImageInput', imageUrl);
-
-            me.loadImage(imageUrl);
+            me.predictByImageUrl(imageUrl);
         },
 
         loadImage: function (imageUrl) {
@@ -76,7 +105,7 @@
 
                 context.drawImage(img, 0, 0);
 
-                console.log('Image Data', context.getImageData(0, 0, img.width, img.height));
+                // console.log('Image Data', context.getImageData(0, 0, img.width, img.height));
                 // console.log('Image Data URL', canvas.toDataURL('image/jpeg'));
             };
 
@@ -87,24 +116,30 @@
             var me = this;
 
             if (me.hasGetUserMedia()) {
-                navigator._getUserMedia(
-                    { audio: false, video: true },
-                    function(mediaSteam) {
+                navigator._getUserMedia(me.opts.webCamMedia, function(mediaSteam) {
 
-                        if (navigator.mozGetUserMedia) {
-                            me.videoEl.mozSrcObject = mediaSteam;
-                        } else {
-                            var videoURL = me.getUrlObject();
-                            me.videoEl.src = videoURL.createObjectURL(mediaSteam);
-                        }
+                    if (navigator.mozGetUserMedia) {
+                        me.videoEl.mozSrcObject = mediaSteam;
+                    } else {
+                        var videoURL = me.getUrlObject();
+                        me.videoEl.src = videoURL.createObjectURL(mediaSteam);
+                    }
 
-                        me.$webCamVideo.show();
+                    me.$webCamVideo.show();
 
-                        me.getWebCamSnapshot();
-                    },
-                    function(error) {
-                        console.error(error);
-                    });
+                    // window.setTimeout(function () {
+                    //     me.predictByImageUrl(me.getWebCamSnapshot());
+                    // }, 1000);
+
+                    // window.setInterval(function () {
+                    //     me.predictByImageUrl(me.getWebCamSnapshot());
+                    // }, 5000);
+                },
+
+                function(error) {
+                    console.error(error);
+                });
+
             } else {
                 console.warn('getUserMedia is not supported in your browser.')
             }
@@ -117,8 +152,11 @@
 
             context.drawImage(me.videoEl, 0, 0, me.videoEl.width, me.videoEl.height);
 
-            console.log('Image Data', context.getImageData(0, 0, me.videoEl.width, me.videoEl.height));
-            // console.log('Image Data URL', canvas.toDataURL('image/jpeg'));
+            return me.getRawImageData(canvas.toDataURL('image/jpeg'));
+        },
+
+        getRawImageData: function (imageData) {
+            return imageData.replace(/^data:image\/(png|jpg|jpeg);base64,/, '');
         },
 
         createCanvasElement: function (width, height) {
@@ -161,9 +199,63 @@
 
         getUrlObject: function () {
             return window.URL || window.webkitURL;
+        },
+
+        initClarifaiApp: function () {
+            var me = this;
+
+            me.clarifai = new Clarifai.App(
+                me.opts.clariApiUser,
+                me.opts.clariApiSecret
+            );
+        },
+
+        predictByImageUrl: function (url) {
+            var me = this,
+                tags = [];
+
+            me.clarifai.models.predict(Clarifai.GENERAL_MODEL, url).then(
+                function(response) {
+                    if (response.outputs) {
+                        response.outputs.forEach(function (output) {
+                            if (output.data.concepts) {
+                                output.data.concepts.forEach(function (concept) {
+                                    tags.push(concept.name);
+                                });
+                            }
+                        });
+                    }
+
+                    console.log('Image Tags', tags);
+                    console.log('Output', response.outputs);
+                },
+                function(err) {
+                    console.error(err);
+                }
+            );
+        },
+
+        searchConceptByImageUrl: function (url) {
+            var me = this;
+
+            me.clarifai.inputs.create(url).then(
+                function (response) {
+                    me.clarifai.inputs.search().then(
+                        function(response) {
+                            console.log(response);
+                        },
+                        function(response) {
+                            console.error(response);
+                        }
+                    );
+                },
+                function(err) {
+                    console.error(err);
+                }
+            );
         }
     });
 
-    window.StateManager.addPlugin('*[data-imageSearch="true"]', 'swImageSearch');
+    window.StateManager.addPlugin('*[data-imageSearch="true"]', 'swImageSearch', [ 'm', 'l', 'xl' ]);
 
 })(jQuery, window);
