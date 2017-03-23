@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../../../engine/Shopware/Components/Plugin/schema/config.xsd">
+
+    <elements>
+        <element type="text">
+            <name>clientId</name>
+            <label lang="de">clarifai.com Kunden ID</label>
+            <label lang="en">clarifai.com Client ID</label>
+            <description lang="de">Hinterlegen Sie hier ihre clarifai.com Kunden ID.</description>
+            <description lang="en">Register your clarifai.com Client ID here.</description>
+        </element>
+
+        <element type="text">
+            <name>clientSecret</name>
+            <label lang="de">clarifai.com Kunden Token</label>
+            <label lang="en">clarifai.com Client Secret</label>
+            <description lang="de">Hinterlegen Sie hier ihr clarifai.com Kunden Token.</description>
+            <description lang="en">Register your clarifai.com Client Secret here.</description>
+        </element>
+    </elements>
+
+</config>
