@@ -1,0 +1,94 @@
+.search--container {
+    .clearfix();
+    position: relative;
+    top: 0; left: 0;
+
+    .search--main {
+        .unitize(margin-right, 50);
+        position: absolute;
+        top: 0; left: 0; right: 0;
+    }
+
+    .search--switch {
+        .unitize-width(40);
+        float: right;
+
+        .btn--search-image {
+            .unitize-width(40);
+
+            &.is--active {
+                .linear-gradient(@btn-primary-top-bg, @btn-primary-bottom-bg);
+                border: 0 none;
+                color: @btn-primary-text-color;
+
+                &:hover {
+                    background: @btn-primary-hover-bg;
+                    color: @btn-primary-hover-text-color;
+                }
+            }
+
+            .icon--pictures {
+                .unitize(font-size, 20);
+                vertical-align: middle;
+            }
+        }
+    }
+
+    .search--images {
+        .clearfix();
+        .unitize(margin-right, 50);
+        display: none;
+        position: absolute;
+        top: 0; left: 0; right: 0;
+
+        .search--image-url {
+            .unitize(margin-right, 50);
+            display: block;
+        }
+
+        .search--image-input {
+            .unitize-height(40);
+            .unitize-padding(9, 9);
+            background: #f8f8fa;
+            vertical-align: middle;
+            display: block;
+            width: 100%;
+        }
+
+        .btn--webcam-image {
+            .unitize-width(40);
+            float: right;
+
+            .icon--camera {
+                .unitize(font-size, 20);
+                vertical-align: middle;
+            }
+        }
+
+        .search--webcam-video {
+            .unitize-width(800);
+            .box-shadow(0 0 3px 0 rgba(0, 0, 0, 0.1));
+            display: none;
+            width: 100%;
+            position: fixed;
+            top: 0; bottom: 0;
+            left: 0; right: 0;
+            z-index: 99999;
+            background: rgba(255, 255, 255, 0.9);
+            text-align: left;
+
+            video {
+                .unitize(margin-top, 50);
+                .unitize-width(400);
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+
+    }
+
+}
+
+
+
