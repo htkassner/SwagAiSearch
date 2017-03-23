@@ -55,8 +55,10 @@
             top: 0; left: 0; right: 0;
 
             .search--image-url {
-                .unitize(margin-right, 50);
+                .unitize(right, 100);
                 display: block;
+                position: absolute;
+                top: 0; left: 0;
             }
 
             .search--image-input {
@@ -68,8 +70,30 @@
                 width: 100%;
             }
 
+            #image-upload {
+                .appearance(none);
+                opacity: 0;
+                width: 0;
+                height: 0;
+                margin: 0;
+                padding: 0;
+            }
+
+            .btn--upload-image {
+                .unitize-width(40);
+                .unitize(margin-right, 10);
+                display: block;
+                float: right;
+
+                .icon--folder {
+                    .unitize(font-size, 20);
+                    vertical-align: middle;
+                }
+            }
+
             .btn--webcam-image {
                 .unitize-width(40);
+                display: block;
                 float: right;
 
                 .icon--camera {

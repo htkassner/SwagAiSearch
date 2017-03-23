@@ -19,6 +19,11 @@
                 <i class="icon--camera"></i>
             </a>
 
+            <label for="image-upload" class="btn btn--upload-image">
+                <i class="icon--folder"></i>
+            </label>
+            <input type="file" name="image-upload" id="image-upload" accept="image/*">
+
             <div class="search--image-url">
                 <input type="text" name="imageurl" id="image-url" class="search--image-input" placeholder="Bild URL" />
             </div>
