@@ -18,6 +18,8 @@
 
             snapShotBtnSelector: '.search--webcam-snapshot',
 
+            fileInputSelector: '#image-upload',
+
             webCamMedia: {
                 audio: false,
                 video: true
@@ -43,6 +45,7 @@
             me.$webCamVideo = me.$el.find(me.opts.webCamVideoSelector);
             me.$imageInput = me.$el.find(me.opts.imageInputSelector);
             me.$snapShotBtn = me.$el.find(me.opts.snapShotBtnSelector);
+            me.$fileInput = me.$el.find(me.opts.fileInputSelector);
 
             me.videoEl = me.createVideoElement(400, 300);
             me.$webCamVideo.prepend(me.videoEl);
@@ -58,6 +61,7 @@
             me._on(me.$snapShotBtn, 'click', $.proxy(me.onSnapShotBtn, me));
             // me._on(me.$imageInput, 'keyup', $.proxy(me.onImageInput, me));
             me._on(me.$imageInput, 'change', $.proxy(me.onImageInput, me));
+            me._on(me.$fileInput, 'change', $.proxy(me.onFileInput, me));
         },
 
         onSwitchBtn: function (event) {
@@ -79,6 +83,12 @@
         onWebCamBtn: function () {
             var me = this;
 
+            if (me.$webCamVideo.is(':visible')) {
+                me.videoEl.pause();
+                me.$webCamVideo.hide();
+                return;
+            }
+
             me.getWebCamVideo();
         },
 
@@ -93,6 +103,29 @@
                 imageUrl = me.$imageInput.val();
 
             me.predictByImageUrl(imageUrl);
+        },
+
+        onFileInput: function (event) {
+            var me = this,
+                target = event.target;
+
+            if (!target.files || !window.FileReader) {
+                return false;
+            }
+
+            var file = target.files[0];
+
+            if (!file.type.match('image.*')) {
+                return false;
+            }
+
+            var reader = new FileReader();
+
+            reader.onload = function () {
+                me.predictByImageUrl(me.getRawImageData(reader.result));
+            };
+
+            reader.readAsDataURL(file);
         },
 
         loadImage: function (imageUrl) {
@@ -126,14 +159,6 @@
                     }
 
                     me.$webCamVideo.show();
-
-                    // window.setTimeout(function () {
-                    //     me.predictByImageUrl(me.getWebCamSnapshot());
-                    // }, 1000);
-
-                    // window.setInterval(function () {
-                    //     me.predictByImageUrl(me.getWebCamSnapshot());
-                    // }, 5000);
                 },
 
                 function(error) {
@@ -141,7 +166,7 @@
                 });
 
             } else {
-                console.warn('getUserMedia is not supported in your browser.')
+                console.warn('The getUserMedia feature is not supported in your browser.')
             }
         },
 
