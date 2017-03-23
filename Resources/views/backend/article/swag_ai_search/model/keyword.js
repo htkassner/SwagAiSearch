@@ -6,15 +6,15 @@ Ext.define('Shopware.apps.Article.swagAiSearch.model.Keyword', {
     fields: [
         { name: 'id', type: 'int', useNull: true },
         { name: 'keyword', type: 'string' },
-        { name: 'article', persist: false }
+        { name: 'article', type: 'int' }
     ],
 
     proxy: {
         type: 'ajax',
         api: {
-            create: '{url action="save"}',
-            update: '{url action="save"}',
-            delete: '{url action="delete"}'
+            create: '{url action="save" controller="SwagAiSearch"}',
+            update: '{url action="save" controller="SwagAiSearch"}',
+            delete: '{url action="delete" controller="SwagAiSearch"}'
         },
 
         reader:{

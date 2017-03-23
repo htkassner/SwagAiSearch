@@ -11,6 +11,10 @@ Ext.define('Shopware.apps.Article.swagAiSearch.view.detail.Window', {
 
         me.callParent(arguments);
 
+        me.subApplication.app.addController(Ext.create('Shopware.apps.Article.SwagAiSearch.controller.Keywords', {
+            subApplication: me.subApplication
+        }));
+
         me.on('storesLoaded', function() {
             me.mainTab.insert(2, me.createKeywordTab());
         }, me);
@@ -21,12 +25,13 @@ Ext.define('Shopware.apps.Article.swagAiSearch.view.detail.Window', {
             articleId = me.article ? me.article.get('id') : null;
 
         me.keywordGrid = Ext.create('Shopware.apps.Article.swagAiSearch.view.detail.Keywords', {
-            articleId: articleId
+           articleId: articleId
         });
 
         me.keywordTab = Ext.create('Ext.panel.Panel', {
-            title: '{s name=keywords_tab/title}{/s}',
+            title: '{s name=keywords_tab/title}Keywords{/s}',
             layout: 'fit',
+
             disabled: Ext.isEmpty(articleId),
             items: [me.keywordGrid],
             listeners: {
