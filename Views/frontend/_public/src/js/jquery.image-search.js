@@ -35,6 +35,12 @@
         init: function () {
             var me = this;
 
+            me.applyDataAttributes();
+
+            if (me.opts.controllerUrl === null) {
+                return false;
+            }
+
             me.initUserMedia();
             me.initClarifaiApp();
 
@@ -59,7 +65,6 @@
             me._on(me.$switchBtn, 'click', $.proxy(me.onSwitchBtn, me));
             me._on(me.$webCamBtn, 'click', $.proxy(me.onWebCamBtn, me));
             me._on(me.$snapShotBtn, 'click', $.proxy(me.onSnapShotBtn, me));
-            // me._on(me.$imageInput, 'keyup', $.proxy(me.onImageInput, me));
             me._on(me.$imageInput, 'change', $.proxy(me.onImageInput, me));
             me._on(me.$fileInput, 'change', $.proxy(me.onFileInput, me));
         },
@@ -95,14 +100,16 @@
         onSnapShotBtn: function () {
             var me = this;
 
-            me.predictByImageUrl(me.getWebCamSnapshot());
+            me.sendSearchRequest(me.getWebCamSnapshot());
+            // me.predictByImageUrl(me.getWebCamSnapshot());
         },
 
         onImageInput: function () {
             var me = this,
                 imageUrl = me.$imageInput.val();
 
-            me.predictByImageUrl(imageUrl);
+            me.sendSearchRequest(imageUrl);
+            // me.predictByImageUrl(imageUrl);
         },
 
         onFileInput: function (event) {
@@ -122,7 +129,8 @@
             var reader = new FileReader();
 
             reader.onload = function () {
-                me.predictByImageUrl(me.getRawImageData(reader.result));
+                me.sendSearchRequest(me.getRawImageData(reader.result));
+                // me.predictByImageUrl(me.getRawImageData(reader.result));
             };
 
             reader.readAsDataURL(file);
@@ -143,6 +151,24 @@
             };
 
             img.src = imageUrl;
+        },
+
+        sendSearchRequest: function (imageData) {
+            var me = this;
+
+            if (!imageData) {
+                return false;
+            }
+
+            $.ajax({
+                url: me.opts.controllerUrl,
+                method: 'POST',
+                data: {
+                    imageData: imageData
+                }
+            }).done(function (response) {
+                console.log(response);
+            });
         },
 
         getWebCamVideo: function () {
@@ -253,26 +279,6 @@
 
                     console.log('Image Tags', tags);
                     console.log('Output', response.outputs);
-                },
-                function(err) {
-                    console.error(err);
-                }
-            );
-        },
-
-        searchConceptByImageUrl: function (url) {
-            var me = this;
-
-            me.clarifai.inputs.create(url).then(
-                function (response) {
-                    me.clarifai.inputs.search().then(
-                        function(response) {
-                            console.log(response);
-                        },
-                        function(response) {
-                            console.error(response);
-                        }
-                    );
                 },
                 function(err) {
                     console.error(err);

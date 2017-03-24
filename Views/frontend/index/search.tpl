@@ -1,7 +1,7 @@
 {extends file="parent:frontend/index/search.tpl"}
 
 {block name='frontend_index_search_container'}
-    <div class="search--container" data-imageSearch="true">
+    <div class="search--container" data-imageSearch="true" data-controllerUrl="{url controller="AjaxAiSearch" action="index"}">
 
         <div class="search--switch">
             <a href="#" title="Bilder-Suche" class="btn btn--search-image">
