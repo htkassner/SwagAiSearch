@@ -89,6 +89,13 @@
             var me = this;
 
             if (me.$webCamVideo.is(':visible')) {
+
+                if (me.mediaStream) {
+                    me.mediaStream.getVideoTracks().forEach(function (stream) {
+                        stream.stop();
+                    });
+                }
+
                 me.videoEl.pause();
                 me.$webCamVideo.hide();
                 return;
@@ -175,13 +182,15 @@
             var me = this;
 
             if (me.hasGetUserMedia()) {
-                navigator._getUserMedia(me.opts.webCamMedia, function(mediaSteam) {
+                navigator._getUserMedia(me.opts.webCamMedia, function(mediaStream) {
+
+                    me.mediaStream = mediaStream;
 
                     if (navigator.mozGetUserMedia) {
-                        me.videoEl.mozSrcObject = mediaSteam;
+                        me.videoEl.mozSrcObject = mediaStream;
                     } else {
                         var videoURL = me.getUrlObject();
-                        me.videoEl.src = videoURL.createObjectURL(mediaSteam);
+                        me.videoEl.src = videoURL.createObjectURL(mediaStream);
                     }
 
                     me.$webCamVideo.show();
