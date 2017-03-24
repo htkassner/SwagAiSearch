@@ -28,13 +28,11 @@ class Shopware_Controllers_Frontend_AjaxAiSearch extends Enlight_Controller_Acti
         $searchString = '';
 
         foreach ($predictionResults as $predictionResult) {
-            error_log(print_r($predictionResult->getProbability(), true)."\n", 3, Shopware()->DocPath() . '/debug.log');
-            error_log(print_r($predictionMinimum, true)."\n", 3, Shopware()->DocPath() . '/debug.log');
             if ($predictionResult->getPrediction() >= $predictionMinimum) {
                 $searchString .= $predictionResult->getPrediction() . ' ';
             }
         }
-        error_log(print_r($searchString, true)."\n", 3, Shopware()->DocPath() . '/debug.log');
+
         Shopware()->Plugins()->Controller()->Json()->setPadding();
 
         $this->View()->loadTemplate('frontend/search/ajax.tpl');
