@@ -29,11 +29,13 @@ class CriteriaRequestHandler implements CriteriaRequestHandlerInterface
         Criteria $criteria,
         ShopContextInterface $context
     ) {
-        $term = $request->getParam('sAiSearch', null);
-        if ($term == null) {
-            return;
+        if ($request->has('sAiSearch')) {
+            $term = $request->getParam('sAiSearch', null);
+            if ($term == null) {
+                return;
+            }
+            $term = $this->searchTermPreProcessor->process($term);
+            $criteria->addBaseCondition(new KeywordAiCondition($term));
         }
-        $term = $this->searchTermPreProcessor->process($term);
-        $criteria->addBaseCondition(new KeywordAiCondition($term));
     }
 }
