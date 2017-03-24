@@ -14,6 +14,10 @@
                  class="SwagAiSearch\Bundle\SearchBundleDBAL\Condition\KeywordAiConditionHandler">
             <tag name="condition_handler_dbal" />
         </service>
+
+        <service id="swag_ai_search.clarifai.api_client" class="SwagAiSearch\Components\Clarifai\ApiClient">
+            <argument type="service" id="config"/>
+        </service>
     </services>
 
 </container>

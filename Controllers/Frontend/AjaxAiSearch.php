@@ -3,19 +3,45 @@
 use Shopware\Bundle\SearchBundle\ProductSearchResult;
 use Shopware\Bundle\SearchBundle\SearchTermPreProcessorInterface;
 use Shopware\Bundle\StoreFrontBundle\Struct\ShopContextInterface;
+use SwagAiSearch\Components\Clarifai\Result\PredictionResult;
 
 class Shopware_Controllers_Frontend_AjaxAiSearch extends Enlight_Controller_Action
 {
     public function indexAction()
     {
+        $imageData = $this->Request()->get('imageData');
+
+        if (!$imageData) {
+            return;
+        }
+
+        $apiClient = $this->container->get('swag_ai_search.clarifai.api_client');
+        $predictionMinimum = $this->container->get('config')->get('clarifaiPredictionMinimum');
+
+        try {
+            /** @var PredictionResult[] $predictionResults */
+            $predictionResults = $apiClient->predict($imageData);
+        } catch (\Exception $e) {
+            return;
+        }
+
+        $searchString = '';
+
+        foreach ($predictionResults as $predictionResult) {
+            if ($predictionResult->getPrediction() >= $predictionMinimum) {
+                $searchString .= $predictionResult->getPrediction() . ' ';
+            }
+        }
+        error_log(print_r($searchString, true)."\n", 3, Shopware()->DocPath() . '/debug.log');
         Shopware()->Plugins()->Controller()->Json()->setPadding();
 
         $this->View()->loadTemplate('frontend/search/ajax.tpl');
 
-        $term = $this->Request()->getParam('sAiSearch');
+        $this->Request()->set('sAiSearch', $searchString);
+
         /** @var SearchTermPreProcessorInterface $processor */
         $processor = $this->get('shopware_search.search_term_pre_processor');
-        $term = $processor->process($term);
+        $term = $processor->process($searchString);
 
         if (!$term || strlen($term) < Shopware()->Config()->get('MinSearchLenght')) {
             return;

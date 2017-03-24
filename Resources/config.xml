@@ -4,7 +4,7 @@
 
     <elements>
         <element type="text">
-            <name>clientId</name>
+            <name>clarifaiClientId</name>
             <label lang="de">clarifai.com Kunden ID</label>
             <label lang="en">clarifai.com Client ID</label>
             <description lang="de">Hinterlegen Sie hier ihre clarifai.com Kunden ID.</description>
@@ -12,11 +12,19 @@
         </element>
 
         <element type="text">
-            <name>clientSecret</name>
+            <name>clarifaiClientSecret</name>
             <label lang="de">clarifai.com Kunden Token</label>
             <label lang="en">clarifai.com Client Secret</label>
             <description lang="de">Hinterlegen Sie hier ihr clarifai.com Kunden Token.</description>
             <description lang="en">Register your clarifai.com Client Secret here.</description>
+        </element>
+
+        <element type="text">
+            <name>clarifaiClientPredictionMinimum</name>
+            <label lang="de">clarifai.com Minimum Trefferqoute</label>
+            <label lang="en">clarifai.com Minimal probability</label>
+            <description lang="de">Hinterlegen Sie hier ihr clarifai.com Minimum Trefferquote.</description>
+            <description lang="en">Set your clarifai.com minimal probability quote here.</description>
         </element>
     </elements>
 
