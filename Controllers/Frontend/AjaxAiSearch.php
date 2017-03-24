@@ -16,7 +16,7 @@ class Shopware_Controllers_Frontend_AjaxAiSearch extends Enlight_Controller_Acti
         }
 
         $apiClient = $this->container->get('swag_ai_search.clarifai.api_client');
-        $predictionMinimum = $this->container->get('config')->get('clarifaiPredictionMinimum');
+        $predictionMinimum = (float) $this->container->get('config')->get('clarifaiPredictionMinimum');
 
         try {
             /** @var PredictionResult[] $predictionResults */
@@ -28,6 +28,8 @@ class Shopware_Controllers_Frontend_AjaxAiSearch extends Enlight_Controller_Acti
         $searchString = '';
 
         foreach ($predictionResults as $predictionResult) {
+            error_log(print_r($predictionResult->getProbability(), true)."\n", 3, Shopware()->DocPath() . '/debug.log');
+            error_log(print_r($predictionMinimum, true)."\n", 3, Shopware()->DocPath() . '/debug.log');
             if ($predictionResult->getPrediction() >= $predictionMinimum) {
                 $searchString .= $predictionResult->getPrediction() . ' ';
             }
@@ -37,7 +39,7 @@ class Shopware_Controllers_Frontend_AjaxAiSearch extends Enlight_Controller_Acti
 
         $this->View()->loadTemplate('frontend/search/ajax.tpl');
 
-        $this->Request()->set('sAiSearch', $searchString);
+        $this->Request()->setParam('sAiSearch', $searchString);
 
         /** @var SearchTermPreProcessorInterface $processor */
         $processor = $this->get('shopware_search.search_term_pre_processor');

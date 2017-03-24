@@ -20,7 +20,7 @@
         </element>
 
         <element type="text">
-            <name>clarifaiClientPredictionMinimum</name>
+            <name>clarifaiPredictionMinimum</name>
             <label lang="de">clarifai.com Minimum Trefferqoute</label>
             <label lang="en">clarifai.com Minimal probability</label>
             <description lang="de">Hinterlegen Sie hier ihr clarifai.com Minimum Trefferquote.</description>
