@@ -53,6 +53,10 @@
             me.$snapShotBtn = me.$el.find(me.opts.snapShotBtnSelector);
             me.$fileInput = me.$el.find(me.opts.fileInputSelector);
 
+            if (!me.hasGetUserMedia()) {
+                me.$webCamBtn.hide();
+            }
+
             me.videoEl = me.createVideoElement(400, 300);
             me.$webCamVideo.prepend(me.videoEl);
 
@@ -303,6 +307,6 @@
         }
     });
 
-    window.StateManager.addPlugin('*[data-imageSearch="true"]', 'swImageSearch', [ 'm', 'l', 'xl' ]);
+    window.StateManager.addPlugin('*[data-imageSearch="true"]', 'swImageSearch');
 
 })(jQuery, window);

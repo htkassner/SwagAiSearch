@@ -1,20 +1,77 @@
+.entry--search {
+    .clearfix();
+    vertical-align: middle;
+
+    .entry--trigger {
+        float: right;
+    }
+}
 
 .search--container {
+    float: right;
+
     .search--switch {
         display: none;
     }
 
+    .search--main {
+        .unitize(right, 50);
+        position: absolute;
+        top: 0; left: 0;
+    }
+
     .search--images {
-        display: none;
+        .unitize-width(40);
+        .unitize(margin-right, 10);
+        float: right;
+
+        .btn--webcam-image {
+            display: none;
+        }
+
+        .search--image-url {
+            display: none;
+        }
+
+        .search--webcam-video {
+            display: none;
+        }
+
+        #image-upload {
+            .appearance(none);
+            opacity: 0;
+            width: 0;
+            height: 0;
+            margin: 0;
+            padding: 0;
+            pointer-events: none;
+            position: absolute;
+        }
+
+        .btn--upload-image {
+            .unitize-width(40);
+            display: block;
+            float: right;
+
+            .upload-image--icon {
+                .unitize(font-size, 20);
+                vertical-align: middle;
+
+                &:before {
+                    content: @sw-icon-pictures;
+                }
+            }
+        }
     }
 }
 
-@media screen and (min-width: @tabletViewportWidth) {
+@media screen and (min-width: @phoneLandscapeViewportWidth) {
 
     .search--container {
         .clearfix();
         position: relative;
         top: 0; left: 0;
+        float: none;
 
         .search--main {
             .unitize(margin-right, 50);
@@ -53,6 +110,8 @@
             .unitize(margin-right, 50);
             position: absolute;
             top: 0; left: 0; right: 0;
+            width: auto;
+            float: none;
 
             .search--image-url {
                 .unitize(right, 100);
@@ -70,25 +129,16 @@
                 width: 100%;
             }
 
-            #image-upload {
-                .appearance(none);
-                opacity: 0;
-                width: 0;
-                height: 0;
-                margin: 0;
-                padding: 0;
-                pointer-events: none;
-            }
-
             .btn--upload-image {
-                .unitize-width(40);
                 .unitize(margin-right, 10);
-                display: block;
-                float: right;
 
-                .icon--folder {
+                .upload-image--icon {
                     .unitize(font-size, 20);
                     vertical-align: middle;
+
+                    &:before {
+                        content: @sw-icon-folder;
+                    }
                 }
             }
 
