@@ -4,7 +4,7 @@
 
         defaults: {
 
-            mainSearchSelector: '.search--main',
+            mainSearchSelector: '.main-search--form',
 
             imageSearchSelector: '.search--images',
 
@@ -53,6 +53,9 @@
             me.$snapShotBtn = me.$el.find(me.opts.snapShotBtnSelector);
             me.$fileInput = me.$el.find(me.opts.fileInputSelector);
 
+            me.$searchContainer = me.$el.parent('[data-search="true"]');
+            me.search = me.$searchContainer.data('plugin_swSearch');
+
             if (!me.hasGetUserMedia()) {
                 me.$webCamBtn.hide();
             }
@@ -93,6 +96,8 @@
 
         onWebCamBtn: function () {
             var me = this;
+
+            me.search.closeResult();
 
             if (me.$webCamVideo.is(':visible')) {
                 me.stopWebCamVideo();
@@ -142,23 +147,6 @@
             reader.readAsDataURL(file);
         },
 
-        loadImage: function (imageUrl) {
-            var me = this,
-                img = new Image();
-
-            img.onload = function () {
-                var canvas = me.createCanvasElement(img.width, img.height),
-                    context = canvas.getContext('2d');
-
-                context.drawImage(img, 0, 0);
-
-                // console.log('Image Data', context.getImageData(0, 0, img.width, img.height));
-                // console.log('Image Data URL', canvas.toDataURL('image/jpeg'));
-            };
-
-            img.src = imageUrl;
-        },
-
         sendSearchRequest: function (imageData) {
             var me = this;
 
@@ -173,7 +161,10 @@
                     imageData: imageData
                 }
             }).done(function (response) {
-                console.log(response);
+                me.stopWebCamVideo();
+                me.$webCamVideo.hide();
+
+                me.search.showResult(response);
             });
         },
 
