@@ -28,11 +28,11 @@ class KeywordAiConditionHandler implements ConditionHandlerInterface
         ShopContextInterface $context
     ) {
         /** @var KeywordAiCondition $condition */
-        $query->leftJoin(
+        $query->innerJoin(
             'product',
             's_article_keywords',
             'keyword',
-            'keyword.articleID = product.id AND keyword.keyword IN (:keyword)'
-        )->setParameter('keyword', explode(' ', $condition->getKeyword()), Connection::PARAM_STR_ARRAY);
+            'keyword.articleID = product.id AND keyword.keyword IN (:keywords)'
+        )->setParameter('keywords', explode(' ', $condition->getKeyword()), Connection::PARAM_STR_ARRAY);
     }
 }
