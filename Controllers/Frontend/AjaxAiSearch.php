@@ -6,11 +6,13 @@ use Shopware\Bundle\SearchBundle\ProductSearchResult;
 use Shopware\Bundle\SearchBundle\SearchTermPreProcessorInterface;
 use Shopware\Bundle\StoreFrontBundle\Struct\ShopContextInterface;
 
-class AjaxAiSearch extends \Enlight_Controller_Action
+class Shopware_Controllers_Frontend_AjaxAiSearch extends \Enlight_Controller_Action
 {
     public function indexAction()
     {
-
+        echo '<pre>';
+        \Doctrine\Common\Util\Debug::dump('hallo');
+        die;
 //        Shopware()->Plugins()->Controller()->Json()->setPadding();
 //
 //        $this->View()->loadTemplate('frontend/search/ajax.tpl');
