@@ -78,6 +78,8 @@
                 me.$mainSearch.show();
                 me.$imageSearch.hide();
                 me.$switchBtn.removeClass('is--active');
+                me.$webCamVideo.hide();
+                me.stopWebCamVideo();
             } else {
                 me.$mainSearch.hide();
                 me.$imageSearch.show();
@@ -89,14 +91,7 @@
             var me = this;
 
             if (me.$webCamVideo.is(':visible')) {
-
-                if (me.mediaStream) {
-                    me.mediaStream.getVideoTracks().forEach(function (stream) {
-                        stream.stop();
-                    });
-                }
-
-                me.videoEl.pause();
+                me.stopWebCamVideo();
                 me.$webCamVideo.hide();
                 return;
             }
@@ -203,6 +198,18 @@
             } else {
                 console.warn('The getUserMedia feature is not supported in your browser.')
             }
+        },
+
+        stopWebCamVideo: function () {
+            var me = this;
+
+            if (me.mediaStream) {
+                me.mediaStream.getVideoTracks().forEach(function (stream) {
+                    stream.stop();
+                });
+            }
+
+            me.videoEl.pause();
         },
 
         getWebCamSnapshot: function () {
