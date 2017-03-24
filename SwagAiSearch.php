@@ -5,9 +5,9 @@ namespace SwagAiSearch;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Tools\SchemaTool;
 use Enlight_Controller_ActionEventArgs;
-use Shopware\Components\Model\ModelManager;
 use Shopware\Components\Plugin;
 use Shopware\Components\Theme\LessDefinition;
+use SwagAiSearch\Models\Article\Keyword;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
@@ -49,26 +49,52 @@ class SwagAiSearch extends Plugin
     }
 
     /**
-     * @inheritdoc
+     * @param Plugin\Context\ActivateContext $context
+     */
+    public function activate(Plugin\Context\ActivateContext $context)
+    {
+        $context->scheduleClearCache(Plugin\Context\InstallContext::CACHE_LIST_DEFAULT);
+    }
+
+    /**
+     * @param Plugin\Context\InstallContext $context
      */
     public function install(Plugin\Context\InstallContext $context)
     {
-        $this->updateSchema();
+        parent::install($context);
+
+        $this->installSchema();
     }
 
-    private function updateSchema()
+    /**
+     * @param Plugin\Context\UninstallContext $context
+     */
+    public function uninstall(Plugin\Context\UninstallContext $context)
     {
-        /** @var ModelManager $modelManager */
-        $modelManager = $this->container->get('models');
-        $tool = new SchemaTool($modelManager);
-        $classes = $this->getModelMetaData();
+        parent::uninstall($context);
 
-        try {
-            $tool->dropSchema($classes);
-        } catch (\Exception $e) {
+        if ($context->keepUserData()) {
+            return;
         }
+        $this->uninstallSchema();
+    }
 
-        $tool->createSchema($classes);
+    /**
+     * @inheritdoc
+     */
+    private function installSchema()
+    {
+        $tool = new SchemaTool($this->container->get('models'));
+        $tool->updateSchema($this->getModelMetaData(), true);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    private function uninstallSchema()
+    {
+        $tool = new SchemaTool($this->container->get('models'));
+        $tool->dropSchema($this->getModelMetaData());
     }
 
     /**
@@ -76,7 +102,7 @@ class SwagAiSearch extends Plugin
      */
     private function getModelMetaData()
     {
-        return [$this->container->get('models')->getClassMetadata(Models\Article\Keyword::class)];
+        return [$this->container->get('models')->getClassMetadata(Keyword::class)];
     }
 
     /**
@@ -88,6 +114,9 @@ class SwagAiSearch extends Plugin
         parent::build($container);
     }
 
+    /**
+     * @param Enlight_Controller_ActionEventArgs $args
+     */
     public function onFrontendPostDispatch(Enlight_Controller_ActionEventArgs $args)
     {
         $subject = $args->getSubject();
