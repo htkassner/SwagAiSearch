@@ -1,4 +1,4 @@
-
+//{namespace name="swagaisearch/translations"}
 
 Ext.define('Shopware.apps.Article.SwagAiSearch.controller.Keywords', {
     extend: 'Enlight.app.Controller',
