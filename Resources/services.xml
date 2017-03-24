@@ -3,6 +3,17 @@
 <container xmlns="http://symfony.com/schema/dic/services"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="swag_ai_search.keyword_criteria_request_handler"
+                 class="SwagAiSearch\Bundle\SearchBundle\CriteriaRequestHandler">
+            <argument type="service" id="shopware_search.search_term_pre_processor" />
+            <tag name="criteria_request_handler" />
+        </service>
 
+        <service id="swag_ai_search.keyword_condition_handler"
+                 class="SwagAiSearch\Bundle\SearchBundleDBAL\Condition\KeywordAiConditionHandler">
+            <tag name="condition_handler_dbal" />
+        </service>
+    </services>
 
 </container>
