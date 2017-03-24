@@ -63,12 +63,18 @@ class ApiClient
             $this->accessToken = $this->requestAccessToken();
         }
 
+        $type = 'base64';
+
+        if (strpos($imageData, 'http') !== false) {
+            $type = 'url';
+        }
+
         $postData = json_encode([
             'inputs' => [
                 [
                     'data' => [
                         'image' => [
-                            'base64' => $imageData
+                            $type => $imageData
                         ]
                     ]
                 ]
