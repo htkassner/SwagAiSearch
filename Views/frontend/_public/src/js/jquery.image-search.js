@@ -53,6 +53,10 @@
             me.$snapShotBtn = me.$el.find(me.opts.snapShotBtnSelector);
             me.$fileInput = me.$el.find(me.opts.fileInputSelector);
 
+            if (!me.hasGetUserMedia()) {
+                me.$webCamBtn.hide();
+            }
+
             me.videoEl = me.createVideoElement(400, 300);
             me.$webCamVideo.prepend(me.videoEl);
 
@@ -78,6 +82,8 @@
                 me.$mainSearch.show();
                 me.$imageSearch.hide();
                 me.$switchBtn.removeClass('is--active');
+                me.$webCamVideo.hide();
+                me.stopWebCamVideo();
             } else {
                 me.$mainSearch.hide();
                 me.$imageSearch.show();
@@ -89,14 +95,7 @@
             var me = this;
 
             if (me.$webCamVideo.is(':visible')) {
-
-                if (me.mediaStream) {
-                    me.mediaStream.getVideoTracks().forEach(function (stream) {
-                        stream.stop();
-                    });
-                }
-
-                me.videoEl.pause();
+                me.stopWebCamVideo();
                 me.$webCamVideo.hide();
                 return;
             }
@@ -205,6 +204,18 @@
             }
         },
 
+        stopWebCamVideo: function () {
+            var me = this;
+
+            if (me.mediaStream) {
+                me.mediaStream.getVideoTracks().forEach(function (stream) {
+                    stream.stop();
+                });
+            }
+
+            me.videoEl.pause();
+        },
+
         getWebCamSnapshot: function () {
             var me = this,
                 canvas = me.createCanvasElement(me.videoEl.width, me.videoEl.height),
@@ -296,6 +307,6 @@
         }
     });
 
-    window.StateManager.addPlugin('*[data-imageSearch="true"]', 'swImageSearch', [ 'm', 'l', 'xl' ]);
+    window.StateManager.addPlugin('*[data-imageSearch="true"]', 'swImageSearch');
 
 })(jQuery, window);

@@ -20,9 +20,9 @@
             </a>
 
             <label for="image-upload" class="btn btn--upload-image">
-                <i class="icon--folder"></i>
+                <i class="icon--folder upload-image--icon"></i>
             </label>
-            <input type="file" name="image-upload" id="image-upload" accept="image/*">
+            <input type="file" name="image-upload" id="image-upload" accept="image/*" capture>
 
             <div class="search--image-url">
                 <input type="text" name="imageurl" id="image-url" class="search--image-input" placeholder="Bild URL" />
