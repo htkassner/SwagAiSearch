@@ -6,7 +6,7 @@ Ext.define('Shopware.apps.Article.swagAiSearch.model.Keyword', {
     fields: [
         { name: 'id', type: 'int', useNull: true },
         { name: 'keyword', type: 'string' },
-        { name: 'article', type: 'int' }
+        { name: 'article', type: 'int', persist: false }
     ],
 
     proxy: {

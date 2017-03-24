@@ -136,7 +136,7 @@ Ext.define('Shopware.apps.Article.swagAiSearch.view.detail.Keywords', {
                     }
                 },
                 edit: function(editor, e) {
-                    me.fireEvent('keywordAdded', editor, e);
+                    me.fireEvent('keywordSaved', editor, e);
                 }
             }
         });

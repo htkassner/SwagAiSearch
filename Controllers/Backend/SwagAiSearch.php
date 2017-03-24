@@ -30,7 +30,6 @@ class Shopware_Controllers_Backend_SwagAiSearch extends \Shopware_Controllers_Ba
         unset($data['article']);
         $model->fromArray($data);
 
-
         $violations = $this->getManager()->validate($model);
         $errors = [];
         /** @var $violation Symfony\Component\Validator\ConstraintViolation */

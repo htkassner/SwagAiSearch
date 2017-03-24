@@ -9,7 +9,7 @@ Ext.define('Shopware.apps.Article.SwagAiSearch.controller.Keywords', {
         me.control({
             'swagaisearch-keywords-grid': {
                 'addKeyword': me.onAddKeyword,
-                'keywordAdded': me.onKeywordAdded,
+                'keywordSaved': me.onKeywordSaved,
                 'deleteKeyword': me.onDeleteKeyword,
                 'searchfilterchange': me.onSearchFilterChange
             }
@@ -29,12 +29,15 @@ Ext.define('Shopware.apps.Article.SwagAiSearch.controller.Keywords', {
         }
     },
 
-    onKeywordAdded: function(editor, e) {
-        var me = this;
+    onKeywordSaved: function(editor, e) {
+        var me = this,
+            data = e.record.getData();
+
+        data['article'] = e.grid.getArticleId();
 
         Ext.Ajax.request({
             url: '{url action="create" controller="SwagAiSearch"}',
-            jsonData: e.record.getData(),
+            jsonData: data,
             success: function() {
                 e.store.load();
             },
