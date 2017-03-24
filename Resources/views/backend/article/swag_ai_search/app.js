@@ -1,4 +1,4 @@
-
+//{namespace name="swagaisearch/translations"}
 
 //{block name="backend/article/application"}
 //{$smarty.block.parent}

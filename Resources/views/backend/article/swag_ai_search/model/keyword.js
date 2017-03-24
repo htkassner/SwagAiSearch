@@ -1,4 +1,4 @@
-
+//{namespace name="swagaisearch/translations"}
 
 Ext.define('Shopware.apps.Article.swagAiSearch.model.Keyword', {
     extend: 'Shopware.data.Model',
