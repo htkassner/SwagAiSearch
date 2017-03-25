@@ -9,7 +9,7 @@ Ext.define('Shopware.apps.Article.SwagAiSearch.controller.Keywords', {
         me.control({
             'swagaisearch-keywords-grid': {
                 'addKeyword': me.onAddKeyword,
-                'keywordSaved': me.onKeywordSaved,
+                'saveKeyword': me.onSaveKeyword,
                 'deleteKeyword': me.onDeleteKeyword,
                 'searchfilterchange': me.onSearchFilterChange
             }
@@ -29,44 +29,45 @@ Ext.define('Shopware.apps.Article.SwagAiSearch.controller.Keywords', {
         }
     },
 
-    onKeywordSaved: function(editor, e) {
+    onSaveKeyword: function(editor, e) {
         var me = this,
-            data = e.record.getData();
+            data = e.record.getData(),
+            url = '{url action="create" controller="SwagAiSearch"}';
 
         data['article'] = e.grid.getArticleId();
 
-        Ext.Ajax.request({
-            url: '{url action="create" controller="SwagAiSearch"}',
-            jsonData: data,
-            success: function() {
-                e.store.load();
-            },
-            scope: me
-        });
+        me.doRequest(url, data, function() {
+            e.store.load();
+        }, me);
     },
 
     onDeleteKeyword: function(grid, records) {
         var me = this,
             store = grid.getStore(),
+            url = '{url action="delete" controller="SwagAiSearch"}',
             deletionCount = 0;
 
         for (var i = 0, count = records.length; i < count; i++) {
             var record = records[i];
 
-            Ext.Ajax.request({
-                url: '{url action="delete" controller="SwagAiSearch"}',
-                jsonData: {
-                    id: record.get('id')
-                },
-                success: function() {
-                    deletionCount++;
-                    if (deletionCount === records.length) {
-                        store.load();
-                    }
-                },
-                scope: me
-            });
+            me.doRequest(url, { id: record.get('id') }, function() {
+                deletionCount++;
+                if (deletionCount === records.length) {
+                    store.load();
+                }
+            }, me);
         }
+    },
+
+    doRequest: function(url, data, callback, scope) {
+        Ext.Ajax.request({
+            url: url,
+            jsonData: data,
+            success: function() {
+                Ext.callback(callback, scope);
+            },
+            scope: scope
+        });
     },
 
     onSearchFilterChange: function(grid, field, newValue) {

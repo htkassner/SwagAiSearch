@@ -18,6 +18,20 @@ Ext.define('Shopware.apps.Article.swagAiSearch.view.detail.Window', {
         me.on('storesLoaded', function() {
             me.mainTab.insert(2, me.createKeywordTab());
         }, me);
+
+        me.saveButton.setHandler(
+            function() {
+                me.fireEvent('saveArticle', me, me.article, {
+                    callback: function() {
+                        if(me.article.get('id')) {
+                            me.keywordGrid.articleId = me.article.get('id');
+                            me.keywordTab.enable();
+                        }
+                    }
+                });
+            },
+            me
+        );
     },
 
     createKeywordTab: function() {
