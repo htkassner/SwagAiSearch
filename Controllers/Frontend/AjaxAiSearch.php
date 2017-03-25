@@ -15,12 +15,17 @@ class Shopware_Controllers_Frontend_AjaxAiSearch extends Enlight_Controller_Acti
             return;
         }
 
+        /**@var ShopContextInterface $context */
+        $context = $this->get('shopware_storefront.context_service')->getShopContext();
+
+        $locale = $context->getShop()->getLocale() ? $context->getShop()->getLocale() : 'de_DE';
+
         $apiClient = $this->container->get('swag_ai_search.clarifai.api_client');
         $predictionMinimum = (float) $this->container->get('config')->get('clarifaiPredictionMinimum');
 
         try {
             /** @var PredictionResult[] $predictionResults */
-            $predictionResults = $apiClient->predict($imageData);
+            $predictionResults = $apiClient->predict($imageData, $locale);
         } catch (\Exception $e) {
             return;
         }
@@ -46,9 +51,6 @@ class Shopware_Controllers_Frontend_AjaxAiSearch extends Enlight_Controller_Acti
         if (!$term || strlen($term) < Shopware()->Config()->get('MinSearchLenght')) {
             return;
         }
-
-        /**@var ShopContextInterface $context */
-        $context = $this->get('shopware_storefront.context_service')->getShopContext();
 
         $criteria = $this->get('shopware_search.store_front_criteria_factory')
             ->createAjaxSearchCriteria($this->Request(), $context);

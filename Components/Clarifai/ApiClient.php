@@ -2,14 +2,14 @@
 
 namespace SwagAiSearch\Components\Clarifai;
 
-
 use GuzzleHttp\Client;
-use Shopware\Components\HttpClient\GuzzleHttpClient;
 use SwagAiSearch\Components\Clarifai\Result\PredictionResult;
 
 class ApiClient
 {
     const BASE_URL = 'https://api.clarifai.com/v2';
+    const IMAGE_DATA_TYPE_BASE64 = 'base64';
+    const IMAGE_DATA_TYPE_URL = 'url';
 
     const GENERAL_MODEL = 'aaa03c23b3724a16a56b629203edc62c';
     const FOOD_MODEL = 'bd367be194cf45149e75f01d59f77ba7';
@@ -20,6 +20,15 @@ class ApiClient
     const CLUSTER_MODEL = 'cccbe437d6e54e2bb911c6aa292fb072';
     const FACE_DETECT_MODEL = 'a403429f2ddf4b49b307e318f00e528b';
     const BLUR = 'ddd9d34872ab32be9f0e3b2b98a87be2';
+
+    /** @var array */
+    private $languages = [
+        'de_DE' => 'de',
+        'en_GB' => 'en',
+        'es_ES' => 'es',
+        'fr_FR' => 'fr',
+        'nl_NL' => 'nl',
+    ];
 
     /**
      * @var string
@@ -32,7 +41,7 @@ class ApiClient
     private $clientSecret;
 
     /**
-     * @var GuzzleHttpClient
+     * @var Client
      */
     private $httpClient;
 
@@ -53,20 +62,20 @@ class ApiClient
 
     /**
      * @param $imageData
+     * @param $locale
      * @param $model
      *
      * @return PredictionResult[]
      */
-    public function predict($imageData, $model = self::GENERAL_MODEL)
+    public function predict($imageData, $locale = 'de_DE', $model = self::GENERAL_MODEL)
     {
         if (!$this->accessToken) {
             $this->accessToken = $this->requestAccessToken();
         }
 
-        $type = 'base64';
-
-        if (strpos($imageData, 'http') !== false) {
-            $type = 'url';
+        $type = self::IMAGE_DATA_TYPE_BASE64;
+        if (filter_var($imageData, FILTER_VALIDATE_URL)) {
+            $type = self::IMAGE_DATA_TYPE_URL;
         }
 
         $postData = json_encode([
@@ -78,12 +87,30 @@ class ApiClient
                         ]
                     ]
                 ]
+            ],
+            'model' => [
+                'output_info' => [
+                    'output_config' => [
+                        'language' => $this->languages[$locale]
+                    ]
+                ]
             ]
         ]);
 
-        $response = $this->doRequest(self::BASE_URL.'/models/'.$model.'/outputs', $postData, $this->accessToken);
+        $response = $this->httpClient->post(self::BASE_URL.'/models/'.$model.'/outputs',
+            [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->accessToken,
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                ],
+                'body' => $postData
+            ]
+        );
 
-        $outputs = $response['outputs'];
+        $result = json_decode($response->getBody(), true);
+        $outputs = $result['outputs'];
+
         $predictionResults = [];
 
         foreach ($outputs as $output) {
@@ -96,18 +123,6 @@ class ApiClient
         }
 
         return $predictionResults;
-
-//        $response = $this->httpClient->post(self::BASE_URL.'/models/'.$model.'/outputs', [
-//            'headers' => [
-//                'Authorization' => 'Bearer ' . $this->accessToken,
-//                'Accept' => 'application/json',
-//                'Content-Type' => 'application/json',
-//            ]
-//        ],
-//            $postData
-//        );
-//
-//        return json_decode($response->getBody(), true);
     }
 
     /**
@@ -124,32 +139,5 @@ class ApiClient
         $result = json_decode($response->getBody(), true);
 
         return $result['access_token'];
-    }
-
-    private function doRequest($url, $data = [], $token = null) {
-        $ch = curl_init();
-        $headers = [
-            'Accept: application/json',
-            'Content-Type: application/json'
-        ];
-
-        $headers[] = 'Authorization: Bearer ' . $token;
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        // curl_setopt($ch, CURLOPT_USERPWD, "$this->clariApiUser:$this->clariApiSecret");
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        $result = curl_exec($ch);
-        $ch_error = curl_error($ch);
-        if ($ch_error) {
-            echo "cURL Error: $ch_error";
-            exit;
-        }
-        if (json_last_error() != JSON_ERROR_NONE) {
-            echo "Can't get a proper json response.";
-            exit();
-        }
-        return json_decode($result, true);
     }
 }
