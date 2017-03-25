@@ -119,6 +119,10 @@
             var me = this,
                 imageUrl = me.$imageInput.val();
 
+            if (imageUrl.length <= 6 || imageUrl.indexOf('http') < 0) {
+                return false;
+            }
+
             me.sendSearchRequest(imageUrl);
             // me.predictByImageUrl(imageUrl);
         },
