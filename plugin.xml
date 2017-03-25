@@ -4,10 +4,15 @@
     <label lang="de">Shopware AI Suche</label>
     <label lang="en">Shopware AI search</label>
     <version>1.0.0</version>
-    <copyright>(c) by Shopware AG</copyright>
+    <copyright>(c) by Holger-Thomas Kaßner &amp; Philipp Schuch</copyright>
     <license>proprietary</license>
     <link>http://store.shopware.com</link>
-    <author>Shopware AG</author>
+    <author>Holger-Thomas Kaßner &amp; Philipp Schuch</author>
+    <description lang="de">
+        Dieses Plugin ermöglicht das Suchen nach Artikeln über Bilddaten. Am Artikel lassen sich
+        im Backend Schlagwörter speichern mit deren Hilfe der Artikel durch die Bilddaten leichter
+        identifiziert werden kann.
+    </description>
 
     <compatibility minVersion="5.2.0" />
 
