@@ -1,6 +1,7 @@
 <?php
 
 use Shopware\Models\Article\Article;
+use Shopware\Models\Article\Image;
 use SwagAiSearch\Models\Article\Keyword;
 
 class Shopware_Controllers_Backend_SwagAiSearch extends \Shopware_Controllers_Backend_Application
@@ -49,16 +50,6 @@ class Shopware_Controllers_Backend_SwagAiSearch extends \Shopware_Controllers_Ba
         $detail = $this->getDetail($model->getId());
 
         return ['success' => true, 'data' => $detail['data']];
-    }
-
-    protected function getListQuery()
-    {
-        $builder = $this->getManager()->createQueryBuilder();
-        $builder->select('keyword')
-            ->from(Keyword::class, 'keyword')
-            ->leftJoin('keyword.article', 'article');
-
-        return $builder;
     }
 
     public function listAction()
@@ -116,5 +107,35 @@ class Shopware_Controllers_Backend_SwagAiSearch extends \Shopware_Controllers_Ba
             'data' => $data,
             'total' => $count
         ]);
+    }
+
+    public function learnAction()
+    {
+        $articleId = $this->Request()->getParam('articleId');
+
+        if (!$articleId) {
+            $this->View()->assign(['success' => false]);
+        }
+
+        $images = $this->get('models')->getRepository(Image::class)->findBy(['articleId' => $articleId]);
+        $imagePaths = [];
+
+        /** @var Image $image */
+        foreach ($images as $image) {
+            $imagePaths[] = $image->getMedia()->getPath();
+        }
+
+
+
+    }
+
+    protected function getListQuery()
+    {
+        $builder = $this->getManager()->createQueryBuilder();
+        $builder->select('keyword')
+            ->from(Keyword::class, 'keyword')
+            ->leftJoin('keyword.article', 'article');
+
+        return $builder;
     }
 }
