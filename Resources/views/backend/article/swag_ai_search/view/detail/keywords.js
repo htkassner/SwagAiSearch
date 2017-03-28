@@ -97,10 +97,9 @@ Ext.define('Shopware.apps.Article.swagAiSearch.view.detail.Keywords', {
                 }
             }, '-', {
                 xtype: 'button',
-                text: '{s name=keywords_grid/toolbar_learn}Keywords lernen{/s}',
-                infoText: 'Schlagworte anhand der Produktbilder lernen',
+                text: '{s name=keywords_grid/toolbar_learn}Learn keywords{/s}',
+                tooltip: '{s name=keywords_grid/toolbar_learn_tooltip}Learn based on product images{/s}',
                 iconCls: 'sprite-brain',
-                disabled: true,
                 handler: function() {
                     me.fireEvent('learnKeyword', me, me.getArticleId());
                 }

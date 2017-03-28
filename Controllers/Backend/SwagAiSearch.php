@@ -2,6 +2,7 @@
 
 use Shopware\Models\Article\Article;
 use Shopware\Models\Article\Image;
+use SwagAiSearch\Components\Clarifai\ApiClient;
 use SwagAiSearch\Models\Article\Keyword;
 
 class Shopware_Controllers_Backend_SwagAiSearch extends \Shopware_Controllers_Backend_Application
@@ -115,18 +116,42 @@ class Shopware_Controllers_Backend_SwagAiSearch extends \Shopware_Controllers_Ba
 
         if (!$articleId) {
             $this->View()->assign(['success' => false]);
+
+            return;
         }
 
-        $images = $this->get('models')->getRepository(Image::class)->findBy(['articleId' => $articleId]);
-        $imagePaths = [];
+        $modelManager = $this->container->get('models');
+        $article = $modelManager->find(Article::class, $articleId);
+        $images = $modelManager->getRepository(Image::class)->findBy(['articleId' => $articleId]);
+        $productImages = [];
+        $mediaService = $this->container->get('shopware_media.media_service');
+        $predictionMinimum = (float) $this->container->get('config')->get('clarifaiPredictionMinimum');
 
         /** @var Image $image */
         foreach ($images as $image) {
-            $imagePaths[] = $image->getMedia()->getPath();
+            $imagePath = $mediaService->getUrl($image->getMedia()->getPath());
+            $imageData = base64_encode(file_get_contents($imagePath));
+
+            $productImages[] = $imageData;
         }
 
+        /** @var ApiClient $apiClient */
+        $apiClient = $this->container->get('swag_ai_search.clarifai.api_client');
 
+        $predictionResults = $apiClient->predict($productImages);
 
+        foreach ($predictionResults as $predictionResult) {
+            if ($predictionResult->getPrediction() >= $predictionMinimum) {
+                $keyword = new Keyword();
+                $keyword->setArticle($article);
+                $keyword->setKeyword($predictionResult->getPrediction());
+                $modelManager->persist($keyword);
+            }
+        }
+
+        $modelManager->flush();
+
+        $this->View()->assign(['success' => true]);
     }
 
     protected function getListQuery()

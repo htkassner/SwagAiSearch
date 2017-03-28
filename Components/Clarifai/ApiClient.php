@@ -61,33 +61,35 @@ class ApiClient
     }
 
     /**
-     * @param $imageData
+     * @param array $imageData
      * @param $locale
      * @param $model
      *
      * @return PredictionResult[]
      */
-    public function predict($imageData, $locale = 'de_DE', $model = self::GENERAL_MODEL)
+    public function predict(array $imageData, $locale = 'de_DE', $model = self::GENERAL_MODEL)
     {
         if (!$this->accessToken) {
             $this->accessToken = $this->requestAccessToken();
         }
 
-        $type = self::IMAGE_DATA_TYPE_BASE64;
-        if (filter_var($imageData, FILTER_VALIDATE_URL)) {
-            $type = self::IMAGE_DATA_TYPE_URL;
+        $inputs = [];
+        foreach ($imageData as $image) {
+            $type = self::IMAGE_DATA_TYPE_BASE64;
+            if (filter_var($image, FILTER_VALIDATE_URL)) {
+                $type = self::IMAGE_DATA_TYPE_URL;
+            }
+            $inputs[] = [
+                'data' => [
+                    'image' => [
+                        $type => $image
+                    ]
+                ]
+            ];
         }
 
         $postData = json_encode([
-            'inputs' => [
-                [
-                    'data' => [
-                        'image' => [
-                            $type => $imageData
-                        ]
-                    ]
-                ]
-            ],
+            'inputs' => $inputs,
             'model' => [
                 'output_info' => [
                     'output_config' => [
