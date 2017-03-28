@@ -25,7 +25,7 @@ class Shopware_Controllers_Frontend_AjaxAiSearch extends Enlight_Controller_Acti
 
         try {
             /** @var PredictionResult[] $predictionResults */
-            $predictionResults = $apiClient->predict($imageData, $locale);
+            $predictionResults = $apiClient->predict([$imageData], $locale);
         } catch (\Exception $e) {
             return;
         }

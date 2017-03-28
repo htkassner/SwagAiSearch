@@ -11,6 +11,7 @@ Ext.define('Shopware.apps.Article.SwagAiSearch.controller.Keywords', {
                 'addKeyword': me.onAddKeyword,
                 'saveKeyword': me.onSaveKeyword,
                 'deleteKeyword': me.onDeleteKeyword,
+                'learnKeyword': me.onLearnKeyword,
                 'searchfilterchange': me.onSearchFilterChange
             }
         });
@@ -57,6 +58,20 @@ Ext.define('Shopware.apps.Article.SwagAiSearch.controller.Keywords', {
                 }
             }, me);
         }
+    },
+
+    onLearnKeyword: function(grid, articleId) {
+        var me = this;
+
+        Ext.Ajax.request({
+            url: '{url controller="SwagAiSearch" action="learn"}',
+            jsonData: {
+                articleId: articleId
+            },
+            callback: function() {
+                grid.getStore().load();
+            }
+        });
     },
 
     doRequest: function(url, data, callback, scope) {

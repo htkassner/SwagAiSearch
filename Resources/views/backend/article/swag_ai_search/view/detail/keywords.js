@@ -86,7 +86,7 @@ Ext.define('Shopware.apps.Article.swagAiSearch.view.detail.Keywords', {
                 handler: function() {
                     me.fireEvent('addKeyword', me);
                 }
-            }, {
+            }, '-', {
                 xtype: 'button',
                 text: '{s name=keywords_grid/toolbar_delete}Remove selection{/s}',
                 iconCls: 'sprite-minus-circle-frame',
@@ -94,6 +94,14 @@ Ext.define('Shopware.apps.Article.swagAiSearch.view.detail.Keywords', {
                 disabled: true,
                 handler: function() {
                     me.fireEvent('deleteKeyword', me, me.getSelectionModel().getSelection());
+                }
+            }, '-', {
+                xtype: 'button',
+                text: '{s name=keywords_grid/toolbar_learn}Learn keywords{/s}',
+                tooltip: '{s name=keywords_grid/toolbar_learn_tooltip}Learn based on product images{/s}',
+                iconCls: 'sprite-brain',
+                handler: function() {
+                    me.fireEvent('learnKeyword', me, me.getArticleId());
                 }
             }, '->', {
                 xtype:'textfield',
