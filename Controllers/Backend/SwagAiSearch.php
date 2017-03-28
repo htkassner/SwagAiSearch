@@ -140,12 +140,15 @@ class Shopware_Controllers_Backend_SwagAiSearch extends \Shopware_Controllers_Ba
 
         $predictionResults = $apiClient->predict($productImages);
 
+        $usedKeywords = [];
         foreach ($predictionResults as $predictionResult) {
-            if ($predictionResult->getPrediction() >= $predictionMinimum) {
+            $prediction = $predictionResult->getPrediction();
+            if (!in_array($prediction, $usedKeywords) && $predictionResult->getPrediction() >= $predictionMinimum) {
                 $keyword = new Keyword();
                 $keyword->setArticle($article);
-                $keyword->setKeyword($predictionResult->getPrediction());
+                $keyword->setKeyword($prediction);
                 $modelManager->persist($keyword);
+                $usedKeywords[] = $prediction;
             }
         }
 
