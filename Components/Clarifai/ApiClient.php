@@ -4,6 +4,7 @@ namespace SwagAiSearch\Components\Clarifai;
 
 use GuzzleHttp\Client;
 use SwagAiSearch\Components\Clarifai\Result\PredictionResult;
+use WebDriver\Exception;
 
 class ApiClient
 {
@@ -69,6 +70,10 @@ class ApiClient
      */
     public function predict(array $imageData, $locale = 'de_DE', $model = self::GENERAL_MODEL)
     {
+        if (!$this->clientId || !$this->clientSecret) {
+            throw new \Exception('No clarifai.com credentials configured! Please configure your plugin');
+        }
+
         if (!$this->accessToken) {
             $this->accessToken = $this->requestAccessToken();
         }

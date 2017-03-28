@@ -135,24 +135,33 @@ class Shopware_Controllers_Backend_SwagAiSearch extends \Shopware_Controllers_Ba
             $productImages[] = $imageData;
         }
 
-        /** @var ApiClient $apiClient */
-        $apiClient = $this->container->get('swag_ai_search.clarifai.api_client');
+        try {
+            /** @var ApiClient $apiClient */
+            $apiClient = $this->container->get('swag_ai_search.clarifai.api_client');
 
-        $predictionResults = $apiClient->predict($productImages);
+            $predictionResults = $apiClient->predict($productImages);
 
-        $usedKeywords = [];
-        foreach ($predictionResults as $predictionResult) {
-            $prediction = $predictionResult->getPrediction();
-            if (!in_array($prediction, $usedKeywords) && $predictionResult->getPrediction() >= $predictionMinimum) {
-                $keyword = new Keyword();
-                $keyword->setArticle($article);
-                $keyword->setKeyword($prediction);
-                $modelManager->persist($keyword);
-                $usedKeywords[] = $prediction;
+            $usedKeywords = [];
+            foreach ($predictionResults as $predictionResult) {
+                $prediction = $predictionResult->getPrediction();
+                if (!in_array($prediction, $usedKeywords) && $predictionResult->getPrediction() >= $predictionMinimum) {
+                    $keyword = new Keyword();
+                    $keyword->setArticle($article);
+                    $keyword->setKeyword($prediction);
+                    $modelManager->persist($keyword);
+                    $usedKeywords[] = $prediction;
+                }
             }
-        }
 
-        $modelManager->flush();
+            $modelManager->flush();
+        } catch (\Exception $e) {
+            $this->View()->assign([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+
+            return;
+        }
 
         $this->View()->assign(['success' => true]);
     }

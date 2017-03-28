@@ -68,8 +68,18 @@ Ext.define('Shopware.apps.Article.SwagAiSearch.controller.Keywords', {
             jsonData: {
                 articleId: articleId
             },
-            callback: function() {
-                grid.getStore().load();
+            callback: function(options, success, response) {
+                var result = Ext.JSON.decode(response.responseText);
+
+                if (result.success) {
+                    grid.getStore().load();
+
+                    return;
+                }
+                Shopware.Notification.createGrowlMessage(
+                    '{s name=keywords/no_credentials_title}Clarifai api error{/s}',
+                    result['message']
+                );
             }
         });
     },
